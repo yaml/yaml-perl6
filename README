@@ -1,0 +1,8 @@
+This is the pure Perl 6 implementation of YAML.
+
+At this early point in time, only the dump() operation is supported.
+
+    use YAML;
+    say dump($any_perl_object);
+
+Copyright 2010. Ingy döt Net.
