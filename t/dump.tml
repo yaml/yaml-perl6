@@ -1,0 +1,41 @@
+%TestML: 1.0
+%Title: Test Dumping Perl 6 Data Objects to YAML
+%Plan: 4
+%PointMarker: +++
+
+
+*perl.eval_perl().dump_to_yaml() == *yaml;
+
+
+=== Simple Array
++++ perl: [1, 2, 3]
++++ yaml
+---
+- 1
+- 2
+- 3
+...
+
+
+=== Simple Hash
++++ perl: {foo => 1, bar => 2, baz=> 3}
++++ yaml
+---
+bar: 2
+baz: 3
+foo: 1
+...
+
+
+=== Simple String
++++ perl: "A string"
++++ yaml
+--- A string
+...
+
+
+=== Simple Number
++++ perl: 123
++++ yaml
+--- 123
+...
