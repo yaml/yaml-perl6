@@ -10,7 +10,7 @@ has $.info = [];
 
 method dump($object) {
     $.prewalk($object);
-    $.seen = ();
+    $.seen = {};
     $.dump_document($object);
     return $.out.join('');
 }
@@ -100,6 +100,10 @@ multi method dump_node(Bool $node) {
     push $.out, ' ', $node.WHICH == Bool::True.WHICH ?? 'true' !! 'false';
 }
 
+multi method dump_node(Any $node) {
+    push $.out, ' ', '~';
+}
+
 multi method dump_node($node) {
     die "Can't dump a node of type " ~ $node.WHAT;
 }
@@ -110,7 +114,7 @@ method dump_alias($node) {
 
 method dump_string($node) {
     my $dump = 
-        $node ~~ /^true|false$/ ?? "'$node'" !!
+        $node ~~ /^ true | false | '~'$/ ?? "'$node'" !!
         $node;
     push $.out, $dump;
 }
@@ -147,7 +151,7 @@ multi method prewalk(Array $node) {
 }
 
 multi method prewalk($node) {
-    return if $node.WHAT eq any('Str()', 'Int()', 'Bool()');
+    return if $node.WHAT eq any('Str()', 'Int()', 'Bool()', 'Any()');
     return;
 #     die "Can't prewalk a node of type " ~ $node.WHAT;
 }
