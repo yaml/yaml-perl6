@@ -1,6 +1,6 @@
 %TestML: 1.0
 %Title: Test Dumping Perl 6 Data Objects to YAML
-%Plan: 8
+%Plan: 9
 %PointMarker: +++
 
 
@@ -85,4 +85,13 @@ push $a, $a;
 - Hi
 - *1
 ...
+
+=== Empty Hashes and Arrays
++++ perl: [{}, []]
++++ yaml
+---
+- {}
+- []
+...
+
 

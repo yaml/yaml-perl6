@@ -21,6 +21,10 @@ method dump_document($node) {
 }
 
 method dump_collection($node, $kind, $function) {
+    if $node.elems == 0 {
+        push $.out, ' ', $kind eq 'map' ?? '{}' !! '[]';    !1;
+        return;
+    }
     $.level++;
     push $.info, {
         kind => $kind,
