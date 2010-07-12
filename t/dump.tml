@@ -39,3 +39,29 @@ foo: 1
 +++ yaml
 --- 123
 ...
+
+
+=== Hash of Hashes
++++ SKIP
++++ perl: { a => { b => 'c' }, { d => { e => 'f' } } }
++++ yaml
+---
+a:
+  b: c
+d:
+  e: f
+...
+
+
+=== List of Lists
++++ SKIP
++++ perl: [[1,2],[3,5]]
++++ yaml
+---
+- - 1
+  - 2
+- - 3
+  - 5
+...
+
+

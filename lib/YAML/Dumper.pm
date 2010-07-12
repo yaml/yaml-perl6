@@ -1,72 +1,98 @@
 class YAML::Dumper;
 
-has $.stream is rw;
+has $.out = [];
 has $.seen = {};
 has $.anchors = {};
 has $.level is rw = 0;
+has $.id is rw = 1;
+has $.stack = [];
 
 method dump($object) {
-    self.prewalk($object);
-    self.stream = '';
-    self.dump_top($object);
-    return self.stream;
+    $.prewalk($object);
+    $.dump_document($object);
+    return $.out.join('');
 }
 
-method prewalk($node) {
-}
-
-method dump_top($node) {
-    $.stream ~= '---';
-    if $node.WHAT eq any('Str()', 'Int()') {
-        $.stream ~= ' ';
-    }
+method dump_document($node) {
+    push $.out, '---';
     $.dump_node($node);
-    if $node.WHAT eq any('Str()', 'Int()') {
-        $.stream ~= "\n";
-    }
-    $.stream ~= "...\n";
+    push $.out, "...\n";
 }
 
-method dump_node($node) {
-    if $node.WHAT eq 'Array()' {
-        $.stream ~= "\n";
-        $.dump_seq($node);
+multi method dump_node(Hash $node) {
+    $.level++;
+    push $.out, "\n";
+    for $node.keys.sort -> $key {
+        push $.out, ' ' x (($.level - 1) * 2);
+        push $.out, $key.Str;
+        push $.out, ':';
+        $.dump_node($node{$key});
+        push $.out, "\n";
     }
-    elsif $node.WHAT eq 'Hash()' {
-        $.stream ~= "\n";
-        $.dump_map($node);
-    }
-    elsif $node.WHAT eq 'Str()' {
-        $.dump_str($node);
-    }
-    elsif $node.WHAT eq 'Int()' {
-        $.dump_str($node);
-    }
-    else {
-        die "Can't dump " ~ $node.WHAT;
-    }
+    $.level--;
 }
 
-method dump_seq(@node) {
-    for @node -> $elem {
-        $.stream ~= ' ' x $.level;
-        $.stream ~= '- ';
+multi method dump_node(Array $node) {
+    $.level++;
+    push $.out, "\n";
+    for @($node) -> $elem {
+        push $.out, ' ' x (($.level - 1) * 2);
+        push $.out, '-';
         $.dump_node($elem);
-        $.stream ~= "\n";
+        push $.out, "\n";
+    }
+    $.level--;
+}
+
+multi method dump_node(Str $node) {
+    push $.out, ' ', $node.Str;
+    if $.level == 0 {
+        push $.out, "\n";
     }
 }
 
-method dump_map(%node) {
-    for %node.keys.sort -> $key {
-        $.stream ~= ' ' x $.level;
-        $.dump_node($key);
-        $.stream ~= ': ';
-        $.dump_node(%node{$key});
-        $.stream ~= "\n";
+multi method dump_node(Int $node) {
+    push $.out, ' ', $node.Str;
+    if $.level == 0 {
+        push $.out, "\n";
     }
 }
 
-method dump_str($node) {
-    $.stream ~= $node.Str;
+multi method dump_node($node) {
+    die "Can't dump a node of type " ~ $node.WHAT;
+}
+
+# Prewalk methods
+multi method prewalk(Hash $node) {
+    my $id = $node.WHICH;
+    given ++$.seen{$id} {
+        when 1 {
+            for $node.values -> $value {
+                $.prewalk($value);
+            }
+        }
+        when 2 {
+            $.anchors{$id} = $.id++;
+        }
+    }
+}
+
+multi method prewalk(Array $node) {
+    my $id = $node.WHICH;
+    given ++$.seen{$id} {
+        when 1 {
+            for @($node) -> $value {
+                $.prewalk($value);
+            }
+        }
+        when 2 {
+            $.anchors{$id} = $.id++;
+        }
+    }
+}
+
+multi method prewalk($node) {
+    return if $node.WHAT eq any('Str()', 'Int()');
+    die "Can't prewalk a node of type " ~ $node.WHAT;
 }
 
