@@ -9,28 +9,3 @@
 # *perl.eval_perl().dump_to_yaml() == *yaml;
 
 
-=== Duplicate Reference
-+++ perl
-my $a = [1, 2];
-[ $a, $a ];
-+++ yaml
----
-- &1
-  - 1
-  - 2
-- *1
-...
-
-
-=== Circular Reference
-+++ SKIP
-+++ perl
-my $a = ['Hi'];
-push $a, $a;
-+++ yaml
---- &1
-- Hi
-- *1
-...
-
-

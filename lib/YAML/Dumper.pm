@@ -1,7 +1,7 @@
 class YAML::Dumper;
 
 has $.out = [];
-has $.seen = {};
+has $.seen is rw = {};
 has $.anchors = {};
 has $.level is rw = 0;
 has $.id is rw = 1;
@@ -9,6 +9,7 @@ has $.info = [];
 
 method dump($object) {
     $.prewalk($object);
+    $.seen = ();
     $.dump_document($object);
     return $.out.join('');
 }
@@ -19,14 +20,31 @@ method dump_document($node) {
     push $.out, "\n", "...", "\n";
 }
 
-method dump_collection($function, $kind) {
+method dump_collection($node, $kind, $function) {
     $.level++;
     push $.info, {
         kind => $kind,
     };
-    $function.();
+    given ++$.seen{$node.WHICH} {
+        when 1 {
+            $function.();
+        }
+        default {
+            $.dump_alias($node);
+        }
+    }
     pop $.info;
     $.level--;
+}
+
+method check_anchor($node) {
+    if $.anchors.exists($node.WHICH) {
+        push $.out, ' ', '&' ~ $.anchors{$node.WHICH};
+        return 0;
+    }
+    else {
+        return 1;
+    }
 }
 
 method indent($first) {
@@ -40,8 +58,8 @@ method indent($first) {
 }
 
 multi method dump_node(Hash $node) {
-    $.dump_collection(sub {
-        my $first = 1;
+    $.dump_collection($node, 'map', sub {
+        my $first = $.check_anchor($node);
         for $node.keys.sort -> $key {
             $.indent($first);
             push $.out, $key.Str;
@@ -49,19 +67,19 @@ multi method dump_node(Hash $node) {
             $.dump_node($node{$key});
             $first = 0;
         }
-    }, 'map');
+    });
 }
 
 multi method dump_node(Array $node) {
-    $.dump_collection(sub {
-        my $first = 1;
+    $.dump_collection($node, 'seq', sub {
+        my $first = $.check_anchor($node);
         for @($node) -> $elem {
             $.indent($first);
             push $.out, '-';
             $.dump_node($elem);
             $first = 0;
         }
-    }, 'seq');
+    });
 }
 
 multi method dump_node(Str $node) {
@@ -76,14 +94,16 @@ multi method dump_node($node) {
     die "Can't dump a node of type " ~ $node.WHAT;
 }
 
+multi method dump_alias($node) {
+    push $.out, ' ', '*' ~ $.anchors{$node.WHICH};
+}
+
 # Prewalk methods
-multi method prewalk(Hash $node) {
+method check_reference($node, $function) {
     my $id = $node.WHICH;
     given ++$.seen{$id} {
         when 1 {
-            for $node.values -> $value {
-                $.prewalk($value);
-            }
+            $function.();
         }
         when 2 {
             $.anchors{$id} = $.id++;
@@ -91,18 +111,20 @@ multi method prewalk(Hash $node) {
     }
 }
 
+multi method prewalk(Hash $node) {
+    $.check_reference($node, sub {
+        for $node.values -> $value {
+            $.prewalk($value);
+        }
+    });
+}
+
 multi method prewalk(Array $node) {
-    my $id = $node.WHICH;
-    given ++$.seen{$id} {
-        when 1 {
-            for @($node) -> $value {
-                $.prewalk($value);
-            }
+    $.check_reference($node, sub {
+        for @($node) -> $value {
+            $.prewalk($value);
         }
-        when 2 {
-            $.anchors{$id} = $.id++;
-        }
-    }
+    });
 }
 
 multi method prewalk($node) {

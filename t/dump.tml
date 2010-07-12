@@ -1,6 +1,6 @@
 %TestML: 1.0
 %Title: Test Dumping Perl 6 Data Objects to YAML
-%Plan: 6
+%Plan: 8
 %PointMarker: +++
 
 
@@ -62,4 +62,27 @@ d:
   - 5
 ...
 
+
+=== Duplicate Reference
++++ perl
+my $a = [1, 2];
+[ $a, $a ];
++++ yaml
+---
+- &1
+  - 1
+  - 2
+- *1
+...
+
+
+=== Circular Reference
++++ perl
+my $a = ['Hi'];
+push $a, $a;
++++ yaml
+--- &1
+- Hi
+- *1
+...
 
