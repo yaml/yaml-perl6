@@ -5,7 +5,7 @@ has $.seen = {};
 has $.anchors = {};
 has $.level is rw = 0;
 has $.id is rw = 1;
-has $.stack = [];
+has $.info = [];
 
 method dump($object) {
     $.prewalk($object);
@@ -19,27 +19,49 @@ method dump_document($node) {
     push $.out, "\n", "...", "\n";
 }
 
-multi method dump_node(Hash $node) {
+method dump_collection($function, $kind) {
     $.level++;
-    for $node.keys.sort -> $key {
-        push $.out, "\n";
-        push $.out, ' ' x (($.level - 1) * 2);
-        push $.out, $key.Str;
-        push $.out, ':';
-        $.dump_node($node{$key});
-    }
+    push $.info, {
+        kind => $kind,
+    };
+    $function.();
+    pop $.info;
     $.level--;
 }
 
-multi method dump_node(Array $node) {
-    $.level++;
-    for @($node) -> $elem {
+method indent($first) {
+    if ($first && $.level > 1 && $.info[*-2]<kind> eq 'seq') {
+        push $.out, ' ';
+    }
+    else {
         push $.out, "\n";
         push $.out, ' ' x (($.level - 1) * 2);
-        push $.out, '-';
-        $.dump_node($elem);
     }
-    $.level--;
+}
+
+multi method dump_node(Hash $node) {
+    $.dump_collection(sub {
+        my $first = 1;
+        for $node.keys.sort -> $key {
+            $.indent($first);
+            push $.out, $key.Str;
+            push $.out, ':';
+            $.dump_node($node{$key});
+            $first = 0;
+        }
+    }, 'map');
+}
+
+multi method dump_node(Array $node) {
+    $.dump_collection(sub {
+        my $first = 1;
+        for @($node) -> $elem {
+            $.indent($first);
+            push $.out, '-';
+            $.dump_node($elem);
+            $first = 0;
+        }
+    }, 'seq');
 }
 
 multi method dump_node(Str $node) {

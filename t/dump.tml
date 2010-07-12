@@ -1,6 +1,6 @@
 %TestML: 1.0
 %Title: Test Dumping Perl 6 Data Objects to YAML
-%Plan: 5
+%Plan: 6
 %PointMarker: +++
 
 
@@ -53,7 +53,6 @@ d:
 
 
 === List of Lists
-+++ SKIP
 +++ perl: [[1,2],[3,5]]
 +++ yaml
 ---
