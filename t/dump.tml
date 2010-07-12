@@ -1,6 +1,6 @@
 %TestML: 1.0
 %Title: Test Dumping Perl 6 Data Objects to YAML
-%Plan: 9
+%Plan: 10
 %PointMarker: +++
 
 
@@ -86,6 +86,7 @@ push $a, $a;
 - *1
 ...
 
+
 === Empty Hashes and Arrays
 +++ perl: [{}, []]
 +++ yaml
@@ -93,5 +94,47 @@ push $a, $a;
 - {}
 - []
 ...
+
+
+=== Booleans and Impersonators
++++ perl
+{
+    true => Bool::True,
+    false => Bool::False,
+    1 => 'true',
+    0 => 'false',
+}
++++ yaml
+---
+0: 'false'
+1: 'true'
+'false': false
+'true': true
+...
+
+
+=== Nulls
++++ SKIP
++++ perl
+my %h
+
+my $x = %h{'x'};
+
+%h
++++ yaml
+---
+x: ~
+
+
+=== Objects
++++ SKIP
++++ perl
+class Foo { has $.x; has $.y; };
+
+Foo.new(x => 1, y => 2);
++++ yaml
+--- !Foo
+x: 1
+y: 2
 
 

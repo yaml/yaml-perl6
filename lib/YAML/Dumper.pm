@@ -1,3 +1,4 @@
+use v6;
 class YAML::Dumper;
 
 has $.out = [];
@@ -22,7 +23,7 @@ method dump_document($node) {
 
 method dump_collection($node, $kind, $function) {
     if $node.elems == 0 {
-        push $.out, ' ', $kind eq 'map' ?? '{}' !! '[]';    !1;
+        push $.out, ' ', $kind eq 'map' ?? '{}' !! '[]';
         return;
     }
     $.level++;
@@ -66,7 +67,7 @@ multi method dump_node(Hash $node) {
         my $first = $.check_anchor($node);
         for $node.keys.sort -> $key {
             $.indent($first);
-            push $.out, $key.Str;
+            $.dump_string($key.Str);
             push $.out, ':';
             $.dump_node($node{$key});
             $first = 0;
@@ -87,20 +88,34 @@ multi method dump_node(Array $node) {
 }
 
 multi method dump_node(Str $node) {
-    push $.out, ' ', $node.Str;
+    push $.out, ' ';
+    $.dump_string($node);
 }
 
 multi method dump_node(Int $node) {
     push $.out, ' ', $node.Str;
 }
 
+multi method dump_node(Bool $node) {
+    push $.out, ' ', $node.WHICH == Bool::True.WHICH ?? 'true' !! 'false';
+}
+
 multi method dump_node($node) {
     die "Can't dump a node of type " ~ $node.WHAT;
 }
 
-multi method dump_alias($node) {
+method dump_alias($node) {
     push $.out, ' ', '*' ~ $.anchors{$node.WHICH};
 }
+
+method dump_string($node) {
+    my $dump = 
+        $node ~~ /^true|false$/ ?? "'$node'" !!
+        $node;
+    push $.out, $dump;
+}
+
+
 
 # Prewalk methods
 method check_reference($node, $function) {
@@ -132,7 +147,9 @@ multi method prewalk(Array $node) {
 }
 
 multi method prewalk($node) {
-    return if $node.WHAT eq any('Str()', 'Int()');
-    die "Can't prewalk a node of type " ~ $node.WHAT;
+    return if $node.WHAT eq any('Str()', 'Int()', 'Bool()');
+    return;
+#     die "Can't prewalk a node of type " ~ $node.WHAT;
 }
 
+# vim: ft=perl6
