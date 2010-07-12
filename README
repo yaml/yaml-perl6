@@ -1,3 +1,5 @@
+= YAML
+
 This is the pure Perl 6 implementation of YAML.
 
 At this early point in time, only the dump() operation is supported.
@@ -9,8 +11,11 @@ At this early point in time, only the dump() operation is supported.
 
 Use `ufo`. http://github.com/masak/ufo
 
+    > cd yaml-pm6
     > ufo
     > make test
     > make install
+
+== COPYRIGHT
 
 Copyright 2010. Ingy döt Net.
