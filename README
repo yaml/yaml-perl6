@@ -5,4 +5,12 @@ At this early point in time, only the dump() operation is supported.
     use YAML;
     say dump($any_perl_object);
 
+== INSTALLATION
+
+Use `ufo`. http://github.com/masak/ufo
+
+    > ufo
+    > make test
+    > make install
+
 Copyright 2010. Ingy döt Net.
