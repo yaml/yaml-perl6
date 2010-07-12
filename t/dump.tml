@@ -1,6 +1,6 @@
 %TestML: 1.0
 %Title: Test Dumping Perl 6 Data Objects to YAML
-%Plan: 4
+%Plan: 5
 %PointMarker: +++
 
 
@@ -42,7 +42,6 @@ foo: 1
 
 
 === Hash of Hashes
-+++ SKIP
 +++ perl: { a => { b => 'c' }, { d => { e => 'f' } } }
 +++ yaml
 ---

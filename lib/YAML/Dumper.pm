@@ -16,46 +16,38 @@ method dump($object) {
 method dump_document($node) {
     push $.out, '---';
     $.dump_node($node);
-    push $.out, "...\n";
+    push $.out, "\n", "...", "\n";
 }
 
 multi method dump_node(Hash $node) {
     $.level++;
-    push $.out, "\n";
     for $node.keys.sort -> $key {
+        push $.out, "\n";
         push $.out, ' ' x (($.level - 1) * 2);
         push $.out, $key.Str;
         push $.out, ':';
         $.dump_node($node{$key});
-        push $.out, "\n";
     }
     $.level--;
 }
 
 multi method dump_node(Array $node) {
     $.level++;
-    push $.out, "\n";
     for @($node) -> $elem {
+        push $.out, "\n";
         push $.out, ' ' x (($.level - 1) * 2);
         push $.out, '-';
         $.dump_node($elem);
-        push $.out, "\n";
     }
     $.level--;
 }
 
 multi method dump_node(Str $node) {
     push $.out, ' ', $node.Str;
-    if $.level == 0 {
-        push $.out, "\n";
-    }
 }
 
 multi method dump_node(Int $node) {
     push $.out, ' ', $node.Str;
-    if $.level == 0 {
-        push $.out, "\n";
-    }
 }
 
 multi method dump_node($node) {
