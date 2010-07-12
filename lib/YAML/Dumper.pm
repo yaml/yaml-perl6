@@ -3,6 +3,7 @@ class YAML::Dumper;
 
 has $.out = [];
 has $.seen is rw = {};
+has $.tags = {};
 has $.anchors = {};
 has $.level is rw = 0;
 has $.id is rw = 1;
@@ -42,14 +43,17 @@ method dump_collection($node, $kind, $function) {
     $.level--;
 }
 
-method check_anchor($node) {
+method check_special($node) {
+    my $first = 1;
     if $.anchors.exists($node.WHICH) {
         push $.out, ' ', '&' ~ $.anchors{$node.WHICH};
-        return 0;
+        $first = 0;
     }
-    else {
-        return 1;
+    if $.tags.exists($node.WHICH) {
+        push $.out, ' ', '!' ~ $.tags{$node.WHICH};
+        $first = 0;
     }
+    return $first;
 }
 
 method indent($first) {
@@ -64,7 +68,7 @@ method indent($first) {
 
 multi method dump_node(Hash $node) {
     $.dump_collection($node, 'map', sub {
-        my $first = $.check_anchor($node);
+        my $first = $.check_special($node);
         for $node.keys.sort -> $key {
             $.indent($first);
             $.dump_string($key.Str);
@@ -77,7 +81,7 @@ multi method dump_node(Hash $node) {
 
 multi method dump_node(Array $node) {
     $.dump_collection($node, 'seq', sub {
-        my $first = $.check_anchor($node);
+        my $first = $.check_special($node);
         for @($node) -> $elem {
             $.indent($first);
             push $.out, '-';
@@ -101,12 +105,14 @@ multi method dump_node(Bool $node) {
 }
 
 multi method dump_node(Any $node) {
-    push $.out, ' ', '~';
+    my $type = $node.WHAT.perl;   #RAKUDO (should use Str.substr)
+    return $.dump_null if $type eq 'Any';
+    return $.dump_object($node, $type);
 }
 
-multi method dump_node($node) {
-    die "Can't dump a node of type " ~ $node.WHAT;
-}
+# multi method dump_node($node) {
+#     die "Can't dump a node of type " ~ $node.WHAT;
+# }
 
 method dump_alias($node) {
     push $.out, ' ', '*' ~ $.anchors{$node.WHICH};
@@ -114,11 +120,28 @@ method dump_alias($node) {
 
 method dump_string($node) {
     my $dump = 
-        $node ~~ /^ true | false | '~'$/ ?? "'$node'" !!
+        $node ~~ /^ true | false | null | '~'$/ ?? "'$node'" !!
         $node;
     push $.out, $dump;
 }
 
+method dump_null() {
+    push $.out, ' ', '~';
+}
+
+method dump_object($node, $type) {
+    my $repr = {};
+    $.tags{$repr.WHICH} = $type;
+    for $node.^attributes -> $a {
+        my $name = $a.name;
+        if $a.has_accessor {
+            $name.=subst(/\!/, '.');
+        }
+        my $value = pir::getattribute__PPs($node, $a.name);
+        $repr{$name} = $value;
+    }
+    $.dump_node($repr);
+}
 
 
 # Prewalk methods

@@ -1,6 +1,6 @@
 %TestML: 1.0
 %Title: Test Dumping Perl 6 Data Objects to YAML
-%Plan: 11
+%Plan: 12
 %PointMarker: +++
 
 
@@ -120,6 +120,7 @@ my $y;
 %h{'a'} = Nil;
 %h{'b'} = $y;
 %h{'c'} = Any;
+%h{'null'} = 'null';
 %h{'tilde'} = '~';
 %h;
 +++ yaml
@@ -127,15 +128,15 @@ my $y;
 a: ~
 b: ~
 c: ~
+'null': 'null'
 tilde: '~'
 ...
 
 
 === Objects
-+++ SKIP
 +++ perl
 class Foo {
-    has $.x;
+    has $!x;
     has $.y;
 };
 
@@ -143,7 +144,8 @@ Foo.new(x => 1, y => 2);
 
 +++ yaml
 --- !Foo
-x: 1
-y: 2
+$!x: 1
+$.y: 2
+...
 
 
