@@ -133,11 +133,8 @@ method dump_object($node, $type) {
     my $repr = {};
     $.tags{$repr.WHICH} = $type;
     for $node.^attributes -> $a {
-        my $name = $a.name;
-        if $a.has_accessor {
-            $name.=subst(/\!/, '.');
-        }
-        my $value = pir::getattribute__PPs($node, $a.name);
+        my $name = $a.name.substr(2);
+        my $value = pir::getattribute__PPs($node, $a.name);     #RAKUDO
         $repr{$name} = $value;
     }
     $.dump_node($repr);
