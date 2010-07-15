@@ -57,13 +57,18 @@ method check_special($node) {
 }
 
 method indent($first) {
-    if ($first && $.level > 1 && $.info[*-2]<kind> eq 'seq') {
-        push $.out, ' ';
+    my $seq_in_map = 0;
+    if $.level > 1 {
+        if $first && $.info[*-2]<kind> eq 'seq' {
+            push $.out, ' ';
+            return;
+        }
+        if $.info[*-1]<kind> eq 'seq' && $.info[*-2]<kind> eq 'map' {
+            $seq_in_map = 1;
+        }
     }
-    else {
-        push $.out, "\n";
-        push $.out, ' ' x (($.level - 1) * 2);
-    }
+    push $.out, "\n";
+    push $.out, ' ' x (($.level - 1 - $seq_in_map) * 2);
 }
 
 multi method dump_node(Hash $node) {
