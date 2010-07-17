@@ -124,10 +124,18 @@ method dump_alias($node) {
 }
 
 method dump_string($node) {
-    my $dump = 
-        $node ~~ /^ true | false | null | '~'$/ ?? "'$node'" !!
-        $node;
-    push $.out, $dump;
+    return $.dump_single($node) if $node ~~ /^ true | false | null | '~' $/;
+    return $.dump_single($node) if $node ~~ /^ ' ' /;
+    return $.dump_single($node) if $node ~~ / ' ' $/;
+    return $.dump_unquoted($node);
+}
+
+method dump_single($node) {
+    push $.out, "'", $node.subst(m/"'"/, "''", :g), "'";
+}
+
+method dump_unquoted($node) {
+    push $.out, $node;
 }
 
 method dump_null() {

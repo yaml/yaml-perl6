@@ -1,0 +1,18 @@
+%TestML: 1.0
+%Title: Various String Quoting
+%Plan: 1
+%PointMarker: +++
+
+
+*perl.eval_perl().dump_to_yaml() == *yaml;
+
+
+=== Leading and Trailing Spaces
++++ perl: [ ' x', '  y ', 'z  ' ]
++++ yaml
+---
+- ' x'
+- '  y '
+- 'z  '
+...
+
