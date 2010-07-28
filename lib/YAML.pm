@@ -1,8 +1,9 @@
 use v6;
 
-module YAML;
-
 use YAML::Dumper;
+use YAML::Loader;
+
+module YAML;
 
 our $*VERSION = '0.01';
 
@@ -14,5 +15,8 @@ our sub dump($object) is export {
 }
 
 our sub load($yaml) is export {
-    die "YAML.load is not yet implemented";
+    return YAML::Loader.new.load($yaml);
+    CATCH {
+        say "Error: $!";
+    }
 }

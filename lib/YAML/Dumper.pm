@@ -1,4 +1,5 @@
 use v6;
+
 class YAML::Dumper;
 
 has $.out = [];

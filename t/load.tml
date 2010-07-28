@@ -1,0 +1,171 @@
+%TestML: 1.0
+%Title: Test Loading Perl 6 Data Objects from YAML
+%Plan: 1
+%PointMarker: +++
+
+
+*yaml.load_yaml() == *perl.dotPerl();
+
+
+=== Simple Array
++++ LAST
++++ perl: [1, 2, 3]
++++ yaml
+---
+- 1
+- 2
+- 3
+...
+
+
+=== Simple Hash
++++ perl: {foo => 1, bar => 2, baz=> 3}
++++ yaml
+---
+bar: 2
+baz: 3
+foo: 1
+...
+
+
+=== Simple String
++++ perl: "A string"
++++ yaml
+--- A string
+...
+
+
+=== Simple Number
++++ perl: 123
++++ yaml
+--- 123
+...
+
+
+=== Hash of Hashes
++++ perl: { a => { b => 'c' }, { d => { e => 'f' } } }
++++ yaml
+---
+a:
+  b: c
+d:
+  e: f
+...
+
+
+=== List of Lists
++++ perl: [[1,2],[3,5]]
++++ yaml
+---
+- - 1
+  - 2
+- - 3
+  - 5
+...
+
+
+=== Duplicate Reference
++++ perl
+my $a = [1, 2];
+[ $a, $a ];
++++ yaml
+---
+- &1
+  - 1
+  - 2
+- *1
+...
+
+
+=== Circular Reference
++++ perl
+my $a = ['Hi'];
+push $a, $a;
++++ yaml
+--- &1
+- Hi
+- *1
+...
+
+
+=== Empty Hashes and Arrays
++++ perl: [{}, []]
++++ yaml
+---
+- {}
+- []
+...
+
+
+=== Booleans and Impersonators
++++ perl
+{
+    true => Bool::True,
+    false => Bool::False,
+    1 => 'true',
+    0 => 'false',
+}
++++ yaml
+---
+0: 'false'
+1: 'true'
+'false': false
+'true': true
+...
+
+
+=== Some Nulls
++++ perl
+my %h;
+my $y;
+%h{'a'} = Nil;
+%h{'b'} = $y;
+%h{'c'} = Any;
+%h{'null'} = 'null';
+%h{'tilde'} = '~';
+%h;
++++ yaml
+---
+a: ~
+b: ~
+c: ~
+'null': 'null'
+tilde: '~'
+...
+
+
+=== Objects
++++ perl
+class Foo {
+    has $!x;
+    has $.y;
+};
+
+Foo.new(x => 1, y => 2);
+
++++ yaml
+--- !Foo
+x: 1
+y: 2
+...
+
+
+=== Sequence in Mapping
++++ perl
+{
+    'colors' => [ 'red', 'white' ],
+    'things' => {
+        'round' => [ 'ball', 'globe' ],
+    },
+}
++++ yaml
+---
+colors:
+- red
+- white
+things:
+  round:
+  - ball
+  - globe
+...
+
