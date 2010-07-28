@@ -1,6 +1,6 @@
 %TestML: 1.0
 %Title: Various String Quoting
-%Plan: 1
+%Plan: 3
 %PointMarker: +++
 
 
@@ -11,8 +11,22 @@
 +++ perl: [ ' x', '  y ', 'z  ' ]
 +++ yaml
 ---
-- ' x'
-- '  y '
-- 'z  '
+- " x"
+- "  y "
+- "z  "
 ...
 
+
+=== Newlines
++++ perl: { "foo\n" => "O\nHAI\n\n" }
++++ yaml
+---
+"foo\n": "O\nHAI\n\n"
+...
+
+
+=== Double Quote
++++ perl: '"O HAI", said I.'
++++ yaml
+--- "\"O HAI\", said I."
+...
