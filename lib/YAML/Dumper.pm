@@ -126,13 +126,21 @@ method dump_alias($node) {
 
 method dump_string($node) {
     return $.dump_single($node) if $node ~~ /^ true | false | null | '~' $/;
-    return $.dump_single($node) if $node ~~ /^ ' ' /;
-    return $.dump_single($node) if $node ~~ / ' ' $/;
+    return $.dump_double($node) if $node ~~ /^ ' ' /;
+    return $.dump_double($node) if $node ~~ / ' ' $/;
+    return $.dump_double($node) if $node ~~ / \n | '"' /;
     return $.dump_unquoted($node);
 }
 
 method dump_single($node) {
     push $.out, "'", $node.subst(m/"'"/, "''", :g), "'";
+}
+
+method dump_double($node) {
+    my $text = $node\
+        .subst(m/'"'/, '\\"', :g)\
+        .subst(m/\n/, '\\n', :g);
+    push $.out, '"', $text, '"';
 }
 
 method dump_unquoted($node) {
