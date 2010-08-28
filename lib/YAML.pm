@@ -1,9 +1,9 @@
 use v6;
 
+module YAML;
+
 use YAML::Dumper;
 use YAML::Loader;
-
-module YAML;
 
 our $*VERSION = '0.01';
 
