@@ -1,0 +1,8 @@
+{
+    "name"        : "YAML",
+    "version"     : "*",
+    "description" : "YAML Ain't Markup Language",
+    "depends"     : [ "TestML" ],
+    "source-type" : "git",
+    "source-url"  : "git://github.com/ingydotnet/yaml-pm6.git"
+}
