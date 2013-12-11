@@ -1,8 +1,12 @@
 {
     "name"        : "YAML",
     "version"     : "*",
-    "description" : "YAML Ain't Markup Language",
+    "author"      : "Ingy döt Net <ingy@cpan.org>",
+    "description" : "YAML Ain’t Markup Language",
     "depends"     : [ "TestML" ],
-    "source-type" : "git",
+    "provides"    : {
+        "YAML"         : "lib/YAML.pm",
+        "YAML::Dumper" : "lib/YAML/Dumper.pm"
+    },
     "source-url"  : "git://github.com/ingydotnet/yaml-pm6.git"
 }
