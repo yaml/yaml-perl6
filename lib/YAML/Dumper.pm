@@ -2,16 +2,16 @@ use v6;
 class YAML::Dumper;
 
 has $.out = [];
-has $.seen is rw = {};
+has $.seen = {};
 has $.tags = {};
 has $.anchors = {};
 has $.level is rw = 0;
-has $.id is rw = 1;
+has $.id = 1;
 has $.info = [];
 
 method dump($object) {
     $.prewalk($object);
-    $.seen = {};
+    $!seen = {};
     $.dump_document($object);
     return $.out.join('');
 }
@@ -45,11 +45,11 @@ method dump_collection($node, $kind, $function) {
 
 method check_special($node) {
     my $first = 1;
-    if $.anchors.exists($node.WHICH) {
+    if $.anchors{$node.WHICH}:exists {
         push $.out, ' ', '&' ~ $.anchors{$node.WHICH};
         $first = 0;
     }
-    if $.tags.exists($node.WHICH) {
+    if $.tags{$node.WHICH}:exists {
         push $.out, ' ', '!' ~ $.tags{$node.WHICH};
         $first = 0;
     }
@@ -64,7 +64,7 @@ method indent($first) {
             return;
         }
         if $.info[*-1]<kind> eq 'seq' && $.info[*-2]<kind> eq 'map' {
-            $seq_in_map = 1;
+            $seq_in_map = 0;
         }
     }
     push $.out, "\n";
