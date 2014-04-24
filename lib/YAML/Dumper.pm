@@ -155,7 +155,8 @@ method dump_object($node, $type) {
     $.tags{$repr.WHICH} = $type;
     for $node.^attributes -> $a {
         my $name = $a.name.substr(2);
-        my $value = pir::getattribute__PPs($node, $a.name);     #RAKUDO
+        #my $value = pir::getattribute__PPs($node, $a.name);     #RAKUDO
+        my $value = $a.get_value($node);                         #for non-parrot
         $repr{$name} = $value;
     }
     $.dump_node($repr);
