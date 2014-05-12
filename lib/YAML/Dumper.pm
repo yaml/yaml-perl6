@@ -1,17 +1,17 @@
 use v6;
 class YAML::Dumper;
 
-has $.out = [];
+has $.out is rw = [];
 has $.seen is rw = {};
-has $.tags = {};
-has $.anchors = {};
+has $.tags is rw = {};
+has $.anchors is rw = {};
 has $.level is rw = 0;
 has $.id is rw = 1;
-has $.info = [];
+has $.info is rw = [];
 
 method dump($object) {
     $.prewalk($object);
-    $.seen = {};
+    $!seen = {};
     $.dump_document($object);
     return $.out.join('');
 }
@@ -45,11 +45,11 @@ method dump_collection($node, $kind, $function) {
 
 method check_special($node) {
     my $first = 1;
-    if $.anchors.exists($node.WHICH) {
+    if $.anchors{$node.WHICH} :exists {
         push $.out, ' ', '&' ~ $.anchors{$node.WHICH};
         $first = 0;
     }
-    if $.tags.exists($node.WHICH) {
+    if $.tags{$node.WHICH} :exists {
         push $.out, ' ', '!' ~ $.tags{$node.WHICH};
         $first = 0;
     }
@@ -106,11 +106,11 @@ multi method dump_node(Int $node) {
 }
 
 multi method dump_node(Bool $node) {
-    push $.out, ' ', $node.WHICH == Bool::True.WHICH ?? 'true' !! 'false';
+    push $.out, ' ', $node.WHICH eq Bool::True.WHICH ?? 'true' !! 'false';
 }
 
 multi method dump_node(Any $node) {
-    my $type = $node.WHAT.perl;   #RAKUDO (should use Str.substr)
+    my $type = $node.^name;   #RAKUDO (should use Str.substr)
     return $.dump_null if $type eq 'Any';
     return $.dump_object($node, $type);
 }
@@ -132,13 +132,13 @@ method dump_string($node) {
 }
 
 method dump_single($node) {
-    push $.out, "'", $node.subst(m/"'"/, "''", :g), "'";
+    push $.out, "'", $node.subst(/"'"/, "''", :g), "'";
 }
 
 method dump_double($node) {
     my $text = $node\
-        .subst(m/'"'/, '\\"', :g)\
-        .subst(m/\n/, '\\n', :g);
+        .subst(/'"'/, '\\"', :g)\
+        .subst(/\n/, '\\n', :g);
     push $.out, '"', $text, '"';
 }
 
@@ -155,7 +155,7 @@ method dump_object($node, $type) {
     $.tags{$repr.WHICH} = $type;
     for $node.^attributes -> $a {
         my $name = $a.name.substr(2);
-        my $value = pir::getattribute__PPs($node, $a.name);     #RAKUDO
+        my $value = $a.get_value($node);
         $repr{$name} = $value;
     }
     $.dump_node($repr);
@@ -192,8 +192,8 @@ multi method prewalk(Array $node) {
 }
 
 multi method prewalk($node) {
-    return if $node.WHAT eq any('Str()', 'Int()', 'Bool()', 'Any()');
     return;
+    return if $node.WHAT eq any('Str()', 'Int()', 'Bool()', 'Any()');
 #     die "Can't prewalk a node of type " ~ $node.WHAT;
 }
 
