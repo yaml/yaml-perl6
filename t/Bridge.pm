@@ -5,7 +5,7 @@ module t::Bridge;
 use YAML;
 
 our sub eval_perl($this) {
-    return eval $this.value;
+    return EVAL $this.value;
     CATCH {
         return "$!";
     }

@@ -138,6 +138,7 @@ tilde: '~'
 class Foo {
     has $!x;
     has $.y;
+    submethod BUILD(:$!x, :$!y) { }
 };
 
 Foo.new(x => 1, y => 2);
