@@ -1,8 +1,11 @@
 use v6;
 class YAML::API {
 
-sub load {
-    my ($self, $input) = @_;
+method load(Str $input) {
+    use LibYAML;
+    my $parser = LibYAML::Parser.new;
+    my $data = $parser.parse-string($input);
+    return $data;
 #    require YAML::Perl::Loader;
 #    require YAML::PP::Parser;
 #    require YAML::Reader;
