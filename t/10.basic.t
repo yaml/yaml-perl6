@@ -1,10 +1,12 @@
 use v6;
 
 use Test;
-# use Test::META;
 
 plan 1;
 
-use-ok("YAML");
+use YAML;
+
+my $api = yaml();
+isa-ok($api, "YAML::API");
 
 done-testing;

@@ -1,7 +1,11 @@
 use v6;
-module YAML {
-    sub yaml() is export(:DEFAULT) {
-        require YAML::API;
-        say "hi";
-    }
+class YAML {
+
+sub yaml() is export {
+    require YAML::API;
+    my $api = YAML::API.new;
+    say "hi $api";
+    return $api;
+}
+
 }
