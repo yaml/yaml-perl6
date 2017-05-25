@@ -41,8 +41,8 @@ cmp-ok(%data<map-alias><b>,'==', 3, "mapping aliases work");
 cmp-ok(%data<scalar-alias>, '==', 42, "scalar aliases work");
 
 ok((not defined %data<null-value>), "null");
-cmp-ok(%data<true-value>, '==', True, "true");
-cmp-ok(%data<false-value>, '==', False, "false");
+isa-ok(%data<true-value>, True, "true");
+isa-ok(%data<false-value>, False, "false");
 isa-ok(%data<integer>, "Int", "integer");
 isa-ok(%data<float>, "Rat", "float");
 cmp-ok(%data<hex>, '==', 23, "hex");
