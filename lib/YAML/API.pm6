@@ -1,25 +1,25 @@
 use v6;
 class YAML::API {
-
-method load(Str $input) {
     use LibYAML;
-    my $parser = LibYAML::Parser.new;
-    my $data = $parser.parse-string($input);
-    return $data;
-#    require YAML::Perl::Loader;
-#    require YAML::PP::Parser;
-#    require YAML::Reader;
-#    my $reader = YAML::Reader->new(
-#        input => $input
-#    );
-#    my $parser = YAML::PP::Parser->new(
-#        reader => $reader,
-#    );
-#    my $loader = YAML::Perl::Loader->new(
-#        parser => $parser,
-#    );
-#    return $loader->load;
-}
+    use YAML::Loader;
+    use YAML::Reader;
 
+    has LibYAML::Parser $.parser is rw;
+    has YAML::Loader $.loader is rw;
+    has YAML::Reader $.reader is rw;
+
+    method load(Str $input) {
+        $.reader = YAML::Reader.new(
+            input => $input,
+        );
+        $.loader = YAML::Loader.new;
+        $.parser = LibYAML::Parser.new(
+            reader => $.reader,
+            loader => $.loader,
+        );
+        $.parser.parse-input();
+        my $data = $.loader.data;
+        return $data;
+    }
 
 }
