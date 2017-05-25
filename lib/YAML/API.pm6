@@ -18,8 +18,8 @@ class YAML::API {
             loader => $.loader,
         );
         $.parser.parse-input();
-        my $data = $.loader.data;
-        return $data;
+        my @docs = $.loader.docs;
+        return @docs;
     }
 
 }
