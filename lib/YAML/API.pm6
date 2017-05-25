@@ -1,6 +1,7 @@
 use v6;
 class YAML::API {
     use LibYAML;
+    use LibYAML::Parser;
     use YAML::Loader;
     use YAML::Reader;
 

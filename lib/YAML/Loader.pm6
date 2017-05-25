@@ -57,7 +57,9 @@ class YAML::Loader {
 
     method scalar-event(Hash $event, $parser) {
         my $anchor = $event<anchor>;
-        my $value = $event<value>;
+        my $style = $event<style>;
+        my $svalue = $event<value>;
+        my $value = self.load-scalar($style, $svalue);
         if (defined $anchor) {
             %.anchors{ $anchor } = $value;
         }
@@ -74,5 +76,26 @@ class YAML::Loader {
         @.stack[*-1].push: $value;
     }
 
+    method load-scalar(Str $style, Str $svalue) {
+        if ($style eq "plain") {
+
+            my $value = do given $svalue {
+                when ''|'null'                        { Any }
+                when 'true'                           { True }
+                when 'false'                          { False }
+
+                when /^[<[-+]>? <[0..9]>+         |
+                       0o <[0..7]>+               |
+                       0x <[0..9a..fA..F]>+ ]$/       { .Int }
+
+                when /^<[-+]>? [ 0 | <[0..9]>*]
+                       '.' <[0..9]>+ $/               { .Rat }
+
+                default                               { $_ }
+            }
+
+            return $value;
+        }
+    }
 
 }
