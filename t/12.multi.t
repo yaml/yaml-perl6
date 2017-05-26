@@ -2,7 +2,7 @@ use v6;
 
 use Test;
 
-plan 1;
+plan 2;
 
 use YAML;
 
@@ -16,8 +16,11 @@ doc2: b
 doc3: c
 END
 my $docs = $api.load($yaml);
-say $docs;
 
 cmp-ok($docs.elems, '==', 3, "three documents");
+
+# testing if loader resets
+$docs = $api.load($yaml);
+cmp-ok($docs.elems, '==', 3, "again three documents");
 
 done-testing;

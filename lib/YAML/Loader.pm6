@@ -5,6 +5,13 @@ class YAML::Loader {
     has @.docs is rw;
     has %.anchors is rw;
 
+    method stream-start-event(Hash $event, $parser) {
+        @.docs = ();
+    }
+
+    method stream-end-event(Hash $event, $parser) {
+    }
+
     method document-start-event(Hash $event, $parser) {
         my @array;
         @.stack = item(@array);
