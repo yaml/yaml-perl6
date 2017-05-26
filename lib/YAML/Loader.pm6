@@ -31,7 +31,10 @@ class YAML::Loader {
     method mapping-end-event(Hash $event, $parser) {
         my $array = pop @.stack;
         my $hash = pop @.stack;
-        loop (my $i = 0; $i < $array.elems; $i += 2) {
+        # we can't just do:
+        # $hash = $array.Hash
+        # because we have a reference to $hash elsewhere (in %.anchors)
+        for 0, 2 ...^ $array.elems -> $i {
             my $key = $array[ $i ];
             my $value = $array[ $i + 1 ];
             $hash{ $key } = $value;
