@@ -7,21 +7,21 @@ class YAML::Loader {
 
     method stream-start-event(Hash $event, $parser) {
         @.docs = ();
+        %.anchors = ();
+        @.stack = ();
     }
 
     method stream-end-event(Hash $event, $parser) {
     }
 
     method document-start-event(Hash $event, $parser) {
-        my @array;
-        @.stack = item(@array);
+        @.stack = item(my @array);
     }
 
     method document-end-event(Hash $event, $parser) {
         my $doc = @.stack.pop;
         @.docs.push: $doc[0];
-        my @array;
-        @.stack = item(@array);
+        @.stack = item(my @array);
     }
 
     method mapping-start-event(Hash $event, $parser) {
@@ -31,8 +31,7 @@ class YAML::Loader {
             %.anchors{ $anchor } = %hash;
         }
         push @.stack: %hash;
-        my @array;
-        push @.stack: @array;
+        push @.stack: my @array;
     }
 
     method mapping-end-event(Hash $event, $parser) {
@@ -46,8 +45,7 @@ class YAML::Loader {
             my $value = $array[ $i + 1 ];
             $hash{ $key } = $value;
         }
-        my $last = @.stack[*-1];
-        $last.push: $hash;
+        @.stack[*-1].push: $hash;
     }
 
     method sequence-start-event(Hash $event, $parser) {
@@ -56,32 +54,28 @@ class YAML::Loader {
         if (defined $anchor) {
             %.anchors{ $anchor } = @array;
         }
-        push @.stack: (@array);
+        push @.stack: @array;
     }
 
     method sequence-end-event(Hash $event, $parser) {
         my $array = pop @.stack;
-        my $last = @.stack[*-1];
-        $last.push: $array;
+        @.stack[*-1].push: $array;
     }
 
     method scalar-event(Hash $event, $parser) {
         my $anchor = $event<anchor>;
-        my $style = $event<style>;
-        my $svalue = $event<value>;
-        my $value = self.load-scalar($style, $svalue);
+        my $value = self.load-scalar($event<style>, $event<value>);
         if (defined $anchor) {
             %.anchors{ $anchor } = $value;
         }
-        my $last = @.stack[*-1];
-        $last.push: $value;
+        @.stack[*-1].push: $value;
     }
 
     method alias-event(Hash $event, $parser) {
         my $alias = $event<alias>;
         my $value;
-        if ($.anchors{ $alias }:exists) {
-            $value = $.anchors{ $alias };
+        if (%.anchors{ $alias }:exists) {
+            $value = %.anchors{ $alias };
         }
         @.stack[*-1].push: $value;
     }
