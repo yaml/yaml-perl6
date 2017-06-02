@@ -1,5 +1,5 @@
 use v6;
-class YAML {
+unit class YAML;
 
 sub yaml() is export {
     require YAML::API;
@@ -7,4 +7,3 @@ sub yaml() is export {
     return $api;
 }
 
-}

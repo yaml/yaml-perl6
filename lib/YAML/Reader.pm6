@@ -1,10 +1,10 @@
 use v6;
 
-class YAML::Reader {
-    has Str $.input is rw;
+unit class YAML::Reader;
 
-    method read() {
-        return $.input;
-    }
+has Str $.input is rw;
 
+method read() {
+    return $.input;
 }
+

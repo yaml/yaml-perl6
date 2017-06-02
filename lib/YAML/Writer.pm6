@@ -1,9 +1,9 @@
 use v6;
 
-class YAML::Writer {
-    has Str $.output;
+unit class YAML::Writer;
 
-    method write(Str $str) {
-        $.output ~= $str;
-    }
+has Str $.output;
+
+method write(Str $str) {
+    $.output ~= $str;
 }
