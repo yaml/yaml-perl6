@@ -7,29 +7,33 @@ plan 11;
 use YAML;
 
 my $api = yaml();
-my $yaml = q:to/END/;
-foo: 23
-seq: &seq
-- a
-- b
-- c
-seq-alias: *seq
-map: &map
-  a: 1
-  b: 2
-map-alias: *map
-scalar: &s 42
-scalar-alias: *s
-null-value: null
-true-value: true
-false-value: false
-integer: 23
-float: 3.14159
-hex: 0x17
-oct: 0o27
-END
+my $yaml = q:to/./;
+    foo: 23
+    seq: &seq
+    - a
+    - b
+    - c
+    seq-alias: *seq
+    map: &map
+      a: 1
+      b: 2
+    map-alias: *map
+    scalar: &s 42
+    scalar-alias: *s
+    null-value: null
+    true-value: true
+    false-value: false
+    integer: 23
+    float: 3.14159
+    hex: 0x17
+    oct: 0o27
+    .
+
+# TODO This should become:
+# my %data = $api.load($yaml);
 my $docs = $api.load($yaml);
 my %data = $docs[0];
+
 cmp-ok(%data<foo>, '==', 23, "load works");
 
 %data<seq>[0] = "A";

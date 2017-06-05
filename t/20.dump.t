@@ -25,26 +25,26 @@ my @docs = (%doc1, @doc2);
 
 my $yaml = yaml.dump(@docs);
 
-diag $yaml;
+# diag $yaml;
 
-my $expected-yaml = q:to/EOM/;
----
-doublequotes: string"with"quotes
-empty-string: ''
-'false': false
-float: 3.14159
-foo: bar
-integer: 23
-looks-like-true: 'true'
-singleequotes: string'with'quotes
-'true': true
-undef: ~
-...
----
-- a
-- b
-- c
-...
-EOM
+my $expected-yaml = q:to/./;
+    ---
+    doublequotes: string"with"quotes
+    empty-string: ''
+    'false': false
+    float: 3.14159
+    foo: bar
+    integer: 23
+    looks-like-true: 'true'
+    singleequotes: string'with'quotes
+    'true': true
+    undef: ~
+    ...
+    ---
+    - a
+    - b
+    - c
+    ...
+    .
 
 cmp-ok($yaml, 'eq', $expected-yaml, "dump works");
