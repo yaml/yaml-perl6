@@ -48,8 +48,6 @@ multi method dump-object(Rat:D $rat, Str :$tag) {
 }
 
 multi method dump-object(Positional:D $list, Str :$tag) {
-    say "dump-object list";
-    dd $list;
     $.emitter.sequence-start-event(Str, $tag);
 
     for $list -> $node {
@@ -60,8 +58,6 @@ multi method dump-object(Positional:D $list, Str :$tag) {
 }
 
 multi method dump-object(Associative:D $map, Str :$tag) {
-    say "dump-object hash";
-    dd $map;
     $.emitter.mapping-start-event(Str, $tag);
     for $map.keys.sort -> $key {
         self.dump-object($key);
@@ -71,8 +67,6 @@ multi method dump-object(Associative:D $map, Str :$tag) {
 }
 
 multi method dump-object(Str:D $str, Str :$tag) {
-    say "dump-object str";
-    dd $str;
     my $style = "any";
     given $str {
         when ''|'null'|'true'|'false' {
