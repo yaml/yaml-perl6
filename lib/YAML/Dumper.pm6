@@ -15,11 +15,11 @@ method dump() {
     $.emitter.stream-start-event;
 
     for @.docs -> $doc {
-        $.emitter.document-start-event(False);
+        $.emitter.document-start-event(implicit => False);
 
         self.dump-object($doc);
 
-        $.emitter.document-end-event(False);
+        $.emitter.document-end-event(implicit => False);
     }
 
     $.emitter.stream-end-event;
@@ -32,23 +32,46 @@ method dump() {
 }
 
 multi method dump-object(Mu:U $undef, Str :$tag) {
-    $.emitter.scalar-event(Str, $tag, '~', "plain");
+    $.emitter.scalar-event(
+        value => '~',
+        anchor => Str,
+        tag => $tag,
+        style => "plain",
+    );
 }
 
 multi method dump-object(Bool:D $bool, Str :$tag) {
-    $.emitter.scalar-event(Str, $tag, $bool ?? 'true' !! 'false', "plain");
+    $.emitter.scalar-event(
+        value => $bool ?? 'true' !! 'false',
+        anchor => Str,
+        tag => $tag,
+        style => "plain",
+    );
 }
 
 multi method dump-object(Int:D $int, Str :$tag) {
-    $.emitter.scalar-event(Str, $tag, $int.Str, "plain");
+    $.emitter.scalar-event(
+        value => $int.Str,
+        anchor => Str,
+        tag => $tag,
+        style => "plain",
+    );
 }
 
 multi method dump-object(Rat:D $rat, Str :$tag) {
-    $.emitter.scalar-event(Str, $tag, $rat.Str, "plain");
+    $.emitter.scalar-event(
+        value => $rat.Str,
+        anchor => Str,
+        tag => $tag,
+        style => "plain",
+    );
 }
 
 multi method dump-object(Positional:D $list, Str :$tag) {
-    $.emitter.sequence-start-event(Str, $tag);
+    $.emitter.sequence-start-event(
+        anchor => Str,
+        tag => $tag,
+    );
 
     for $list -> $node {
         self.dump-object($node);
@@ -58,7 +81,10 @@ multi method dump-object(Positional:D $list, Str :$tag) {
 }
 
 multi method dump-object(Associative:D $map, Str :$tag) {
-    $.emitter.mapping-start-event(Str, $tag);
+    $.emitter.mapping-start-event(
+        anchor => Str,
+        tag => $tag,
+    );
     for $map.keys.sort -> $key {
         self.dump-object($key);
         self.dump-object($map{ $key });
@@ -73,6 +99,11 @@ multi method dump-object(Str:D $str, Str :$tag) {
             $style = "single";
         }
     }
-    $.emitter.scalar-event(Str, $tag, $str, $style);
+    $.emitter.scalar-event(
+        value => $str,
+        anchor => Str,
+        tag => $tag,
+        style => $style,
+    );
 }
 
