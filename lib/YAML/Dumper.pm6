@@ -131,10 +131,51 @@ multi method dump-object(Str:D $str, Str :$tag) {
     );
 }
 
-method anchors($object) {
-    return unless $object ~~ Positional|Associative;
+multi method dump-object(Any:D $node, Str :$tag) {
+    return $!emitter.alias-event(alias => $_) with %!aliases{ $node.WHICH };
 
-    return if %!objects{ $object.WHICH }++ > 1;
+    my $anchor = Str;
+    if %!objects{ $node.WHICH } > 1 {
+        $anchor = %!aliases{ $node.WHICH } = $!alias-id++;
+    }
 
-    self.anchors($_) for $object.values;
+    $!emitter.mapping-start-event(
+        anchor => $anchor,
+        tag => $tag,
+    );
+    for $node.^attributes.sort -> $key {
+        my $name = $key.name.substr(2);
+        my $value = $key.get_value($node);
+        self.dump-object($name);
+        self.dump-object($value);
+    }
+    $!emitter.mapping-end-event();
 }
+
+multi method anchors(Mu:U $node) { }
+multi method anchors(Int:D $node) { }
+multi method anchors(Rat:D $node) { }
+multi method anchors(Bool:D $node) { }
+multi method anchors(Str:D $node) { }
+
+multi method anchors(Associative:D $node) {
+    return if %!objects{ $node.WHICH }++ > 1;
+
+    self.anchors($_) for $node.values;
+}
+
+multi method anchors(Positional:D $node) {
+    return if %!objects{ $node.WHICH }++ > 1;
+
+    self.anchors($_) for $node.values;
+}
+
+multi method anchors(Any:D $node) {
+    return if %!objects{ $node.WHICH }++ > 1;
+
+    for $node.^attributes -> $key {
+        my $value = $key.get_value($node);
+        self.anchors($value);
+    }
+}
+
