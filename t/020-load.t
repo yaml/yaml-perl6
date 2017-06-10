@@ -6,7 +6,6 @@ plan 11;
 
 use YAML;
 
-my $api = yaml();
 my $yaml = q:to/./;
     foo: 23
     seq: &seq
@@ -29,10 +28,7 @@ my $yaml = q:to/./;
     oct: 0o27
     .
 
-# TODO This should become:
-# my %data = $api.load($yaml);
-my $docs = $api.load($yaml);
-my %data = $docs[0];
+my %data = yaml.load($yaml);
 
 cmp-ok(%data<foo>, '==', 23, "load works");
 
