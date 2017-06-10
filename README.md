@@ -13,7 +13,9 @@ Currently this depends on
 
 You can install this YAML module from source like this:
 
-    $ git clone https://github.com/yaml/yaml-perl6
+    $ zef install https://github.com/yaml/yaml-perl6.git
+    # or
+    $ git clone https://github.com/yaml/yaml-perl6.git
     $ cd yaml-perl6
     $ zef install .
 
@@ -21,13 +23,31 @@ You can install this YAML module from source like this:
 
 The toplevel API is the first thing we want to get stable. The layer under that,
 the Loader/Dumper/Reader/Writer/Parser/Emitter will change, so it's not
-recommended to use that and think it will always work. Also so make sure to
-update LibYAML also when updating this module.
+recommended to use that and think it will always work. Make sure to update
+LibYAML also when updating this module.
 
     # current usage
     use YAML;
 
+    my $yaml = q:to/./
+        ---
+        integer: 23
+        map:
+          a: true
+          b: false
+        sequence:
+        - x
+        - y
+        - z
+        ...
+        ---
+        This is: document no. 2
+        ...
+        .
+
     # get back single document
+    # note that currently, this will parse the complete string instead
+    # of stopping after the first document
     my $doc = yaml.load($yaml);
     my %hash = yaml.load($yaml);
 
@@ -37,11 +57,13 @@ update LibYAML also when updating this module.
 
     # dump data to YAML
     my $yaml = yaml.dump(%data1, @data2, ...);
+    my @docs = (%data1, @data2);
+    my $yaml = yaml.dump(@docs);
 
 
 # Features
 
-- Load and Dump strings, numbers, booleans, arrays, hashes, objects
+- Load and Dump strings, numbers, booleans, arrays, hashes, (objects)
 - Load and Dump Aliases/Anchors, including cyclic structures
 
 # TODO
