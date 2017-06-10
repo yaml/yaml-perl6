@@ -1,0 +1,39 @@
+{
+    "name" : "YAML",
+
+    "description" : "YAML Loader and Dumper",
+
+    "auth" : "github:yaml",
+
+    "version" : "*",
+
+    "source-url" : "https://github.com/yaml/yaml-perl6.git",
+
+    "perl" : "6.c",
+
+    "tags" : [ "YAML", "format", "serialization" ],
+
+    "provides" : {
+        "YAML"  : "lib/YAML.pm6",
+        "YAML::API"  : "lib/YAML/API.pm6",
+        "YAML::Reader"  : "lib/YAML/Reader.pm6",
+        "YAML::Loader"  : "lib/YAML/Loader.pm6",
+        "YAML::Dumper"  : "lib/YAML/Dumper.pm6",
+        "YAML::Writer"  : "lib/YAML/Writer.pm6"
+    },
+
+    "depends" : [ "LibYAML" ],
+
+    "test-depends" : [ "Test", "JSON::Fast" ],
+
+    "license" : "Artistic-2.0",
+
+    "authors" : [ "Curt Tilmes <ctilmes@cpan.org>",
+                  "Ingy döt Net <ingy@cpan.org>",
+                  "Tina Müller <tinita@cpan.org>" ],
+
+    "support" : {
+      "source" : "https://github.com/yaml/yaml-perl6.git",
+      "bugtracker" : "https://github.com/yaml/yaml-perl6/issues"
+    }
+}
